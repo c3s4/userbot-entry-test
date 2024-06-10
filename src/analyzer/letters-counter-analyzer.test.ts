@@ -3,7 +3,6 @@ import fs from 'fs';
 
 describe('Letter counter analyzer', () => {
   const analyzer = new LettersCounterAnalyzer();
-  beforeEach(() => {});
   it('should exists', () => {
     expect(analyzer).toBeDefined();
   });

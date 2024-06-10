@@ -4,7 +4,6 @@ import { SpacesCounterAnalyzer } from './spaces-counter-analyzer';
 
 describe('Spaces counter analyzer', () => {
   const analyzer = new SpacesCounterAnalyzer();
-  beforeEach(() => {});
   it('should exists', () => {
     expect(analyzer).toBeDefined();
   });

@@ -3,7 +3,6 @@ import fs from 'fs';
 
 describe('Words analyzer', () => {
   const analyzer = new WordsAnalyzer();
-  beforeEach(() => {});
   it('should exists', () => {
     expect(analyzer).toBeDefined();
   });
