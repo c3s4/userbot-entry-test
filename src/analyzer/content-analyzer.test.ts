@@ -51,10 +51,18 @@ describe('Content analyzer', () => {
   });
 
   it('should return an object with the expected values', async () => {
-    const data = '';
+    const data = 'any data';
     spy = mockAnalyzers();
 
     const result = await contentAnalyzer.analyze(data);
+
+    expect(spy.lettersAnalyzer).toHaveBeenCalledTimes(1);
+    expect(spy.spacesAnalyzer).toHaveBeenCalledTimes(1);
+    expect(spy.wordsAnalyzer).toHaveBeenCalledTimes(1);
+
+    expect(spy.lettersAnalyzer).toHaveBeenCalledWith(data);
+    expect(spy.spacesAnalyzer).toHaveBeenCalledWith(data);
+    expect(spy.wordsAnalyzer).toHaveBeenCalledWith(data);
 
     expect(result.lettersCount).toBe(23);
     expect(result.spacesCount).toBe(13);
