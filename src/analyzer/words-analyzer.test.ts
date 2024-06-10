@@ -12,7 +12,7 @@ describe('Words analyzer', () => {
     expect(analyzer.analyze).toBeDefined();
   });
 
-  it('should return expected word counts and words histogram', () => {
+  it('should return expected word counts and words histogram', async () => {
     const data = 'First words Simple test, very simple';
     const expectedWordsCount = 6;
     const expectedWordsHistogram = {
@@ -23,12 +23,12 @@ describe('Words analyzer', () => {
       test: 1,
     };
 
-    const result = analyzer.analyze(data);
+    const result = await analyzer.analyze(data);
     expect(result.wordsCount).toBe(expectedWordsCount);
     expect(result.wordsHistogram).toMatchObject(expectedWordsHistogram);
   });
 
-  it('should consider also numbers and symbols as splitting points', () => {
+  it('should consider also numbers and symbols as splitting points', async () => {
     const data = 'First w0rds s1mple t3St, very s!mpLe, 0rds';
     const expectedWordsCount = 11;
     const expectedWordsHistogram = {
@@ -42,12 +42,12 @@ describe('Words analyzer', () => {
       first: 1,
     };
 
-    const result = analyzer.analyze(data);
+    const result = await analyzer.analyze(data);
     expect(result.wordsCount).toBe(expectedWordsCount);
     expect(result.wordsHistogram).toMatchObject(expectedWordsHistogram);
   });
 
-  it('should return the right count and histogram from text file', () => {
+  it('should return the right count and histogram from text file', async () => {
     const data = fs.readFileSync(__dirname + '/../../test-data/lorem.txt').toString();
     console.log(analyzer.analyze(data));
     const expectedHistogram = {
@@ -116,13 +116,17 @@ describe('Words analyzer', () => {
       laborum: 1,
     };
 
-    expect(analyzer.analyze(data).wordsCount).toBe(69);
-    expect(analyzer.analyze(data).wordsHistogram).toMatchObject(expectedHistogram);
+    const result = await analyzer.analyze(data);
+
+    expect(result.wordsCount).toBe(69);
+    expect(result.wordsHistogram).toMatchObject(expectedHistogram);
   });
 
-  it('should return 0 count for data without words', () => {
+  it('should return 0 count for data without words', async () => {
     const data = '234 1!@@ 345343 434 3334 0-=+';
-    expect(analyzer.analyze(data).wordsCount).toBe(0);
-    expect(analyzer.analyze(data).wordsHistogram).toMatchObject({});
+    const result = await analyzer.analyze(data);
+
+    expect(result.wordsCount).toBe(0);
+    expect(result.wordsHistogram).toMatchObject({});
   });
 });

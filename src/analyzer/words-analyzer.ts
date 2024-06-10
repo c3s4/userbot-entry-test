@@ -6,7 +6,7 @@ interface Results {
 }
 
 export class WordsAnalyzer implements AnalyzerComponent<Results> {
-  analyze(data: string): Results {
+  async analyze(data: string): Promise<Results> {
     const wordTokens = data.match(/[a-zA-Z]+/g);
     const wordsHistogram: Record<string, number> = {};
 

@@ -5,7 +5,7 @@ interface Results {
 }
 
 export class LettersCounterAnalyzer implements AnalyzerComponent<Results> {
-  analyze(data: string): Results {
+  async analyze(data: string): Promise<Results> {
     return { lettersCount: data.match(/[a-zA-Z]/g)?.length || 0 };
   }
 }

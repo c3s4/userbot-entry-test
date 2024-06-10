@@ -12,37 +12,39 @@ describe('Letter counter analyzer', () => {
     expect(analyzer.analyze).toBeDefined();
   });
 
-  it('should return expected count', () => {
+  it('should return expected count', async () => {
     const data = 'aBcd';
-    expect(analyzer.analyze(data)).toMatchObject({
+    expect(await analyzer.analyze(data)).toMatchObject({
       lettersCount: 4,
     });
   });
-  it('should return value excluding digits', () => {
+  it('should return value excluding digits', async () => {
     const data = '741tEOsjKj9Cz4iy 23asd';
-    expect(analyzer.analyze(data)).toMatchObject({
+    expect(await analyzer.analyze(data)).toMatchObject({
       lettersCount: 14,
     });
   });
 
-  it('should return 0 because an empty string', () => {
+  it('should return 0 because an empty string', async () => {
     const data = '';
-    expect(analyzer.analyze(data)).toMatchObject({
+    expect(await analyzer.analyze(data)).toMatchObject({
       lettersCount: 0,
     });
   });
 
-  it('should return a count greater than 0 from bin file', () => {
+  it('should return a count greater than 0 from bin file', async () => {
     const data = fs.readFileSync(__dirname + '/../../test-data/test.bin').toString();
+    const result = await analyzer.analyze(data);
 
-    expect(analyzer.analyze(data).lettersCount).toBeGreaterThan(0);
-    expect(analyzer.analyze(data).lettersCount).not.toBe(data.length);
+    expect(result.lettersCount).toBeGreaterThan(0);
+    expect(result.lettersCount).not.toBe(data.length);
   });
 
-  it('should return the right count from text file', () => {
+  it('should return the right count from text file', async () => {
     const data = fs.readFileSync(__dirname + '/../../test-data/lorem.txt').toString();
+    const result = await analyzer.analyze(data);
 
-    expect(analyzer.analyze(data).lettersCount).toBe(369);
-    expect(analyzer.analyze(data).lettersCount).not.toBe(data.length);
+    expect(result.lettersCount).toBe(369);
+    expect(result.lettersCount).not.toBe(data.length);
   });
 });

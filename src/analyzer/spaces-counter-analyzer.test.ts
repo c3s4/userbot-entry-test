@@ -13,52 +13,54 @@ describe('Spaces counter analyzer', () => {
     expect(analyzer.analyze).toBeDefined();
   });
 
-  it('should return 0', () => {
+  it('should return 0', async () => {
     const data = 'aBcd';
-    expect(analyzer.analyze(data)).toMatchObject({
+    expect(await analyzer.analyze(data)).toMatchObject({
       spacesCount: 0,
     });
   });
 
-  it('should count correctly also the space at the end', () => {
+  it('should count correctly also the space at the end', async () => {
     const data = 'aBcd ';
-    expect(analyzer.analyze(data)).toMatchObject({
+    expect(await analyzer.analyze(data)).toMatchObject({
       spacesCount: 1,
     });
   });
 
-  it('should consider the beginning space', () => {
+  it('should consider the beginning space', async () => {
     const data = ' aBcd ';
-    expect(analyzer.analyze(data)).toMatchObject({
+    expect(await analyzer.analyze(data)).toMatchObject({
       spacesCount: 2,
     });
   });
 
-  it('should return expected spaces count', () => {
+  it('should return expected spaces count', async () => {
     const data = ' 741 tEOsjKj9Cz4iy 23a sd ';
-    expect(analyzer.analyze(data)).toMatchObject({
+    expect(await analyzer.analyze(data)).toMatchObject({
       spacesCount: 5,
     });
   });
 
-  it('should return 0 because an empty string', () => {
+  it('should return 0 because an empty string', async () => {
     const data = '';
-    expect(analyzer.analyze(data)).toMatchObject({
+    expect(await analyzer.analyze(data)).toMatchObject({
       spacesCount: 0,
     });
   });
 
-  it('should return a count greater than 0 from bin file', () => {
+  it('should return a count greater than 0 from bin file', async () => {
     const data = fs.readFileSync(__dirname + '/../../test-data/test.bin').toString();
+    const result = await analyzer.analyze(data);
 
-    expect(analyzer.analyze(data).spacesCount).toBeGreaterThan(0);
-    expect(analyzer.analyze(data).spacesCount).not.toBe(data.length);
+    expect(result.spacesCount).toBeGreaterThan(0);
+    expect(result.spacesCount).not.toBe(data.length);
   });
 
-  it('should return the right count from text file', () => {
+  it('should return the right count from text file', async () => {
     const data = fs.readFileSync(__dirname + '/../../test-data/lorem.txt').toString();
+    const result = await analyzer.analyze(data);
 
-    expect(analyzer.analyze(data).spacesCount).toBe(67);
-    expect(analyzer.analyze(data).spacesCount).not.toBe(data.length);
+    expect(result.spacesCount).toBe(67);
+    expect(result.spacesCount).not.toBe(data.length);
   });
 });

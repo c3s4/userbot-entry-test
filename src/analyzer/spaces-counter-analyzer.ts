@@ -5,7 +5,7 @@ interface Results {
 }
 
 export class SpacesCounterAnalyzer implements AnalyzerComponent<Results> {
-  analyze(data: string): Results {
+  async analyze(data: string): Promise<Results> {
     return {
       spacesCount: data.match(/ /g)?.length || 0,
     };
