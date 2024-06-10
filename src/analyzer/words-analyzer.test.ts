@@ -48,7 +48,6 @@ describe('Words analyzer', () => {
 
   it('should return the right count and histogram from text file', async () => {
     const data = fs.readFileSync(__dirname + '/../../test-data/lorem.txt').toString();
-    console.log(analyzer.analyze(data));
     const expectedHistogram = {
       lorem: 1,
       ipsum: 1,
