@@ -1,8 +1,9 @@
 export interface FileReaderInterface {
   setNext: (next: FileReaderInterface) => void;
   getNext: () => FileReaderInterface | undefined;
-  match: (filePath: string) => Promise<boolean>;
   readData: (filePath: string) => Promise<string | null>;
+  match: (filePath: string) => Promise<boolean>;
+  getContents: (filePath: string) => Promise<string | null>;
 }
 
 export abstract class FileReaderHandler implements FileReaderInterface {
@@ -16,6 +17,24 @@ export abstract class FileReaderHandler implements FileReaderInterface {
     return this.next;
   }
 
+  async readData(filePath: string) {
+    const isMatching = await this.match(filePath);
+    if (isMatching) {
+      try {
+        return await this.getContents(filePath);
+      } catch (err) {
+        return null;
+      }
+    } else {
+      const successor = this.getNext();
+      if (successor) {
+        return await successor.readData(filePath);
+      }
+    }
+
+    return null;
+  }
+
   abstract match(filePath: string): Promise<boolean>;
-  abstract readData(filePath: string): Promise<string | null>;
+  abstract getContents(filePath: string): Promise<string | null>;
 }

@@ -11,21 +11,8 @@ export class HttpFileReader extends FileReaderHandler {
     }
   }
 
-  async readData(filePath: string): Promise<string | null> {
-    const isMatching = await this.match(filePath);
-    if (isMatching) {
-      try {
-        const content = await axios.get(filePath);
-        return content.data;
-      } catch (err) {
-        return null;
-      }
-    } else {
-      const successor = this.getNext();
-      if (successor) {
-        return successor.readData(filePath);
-      }
-    }
-    return null;
+  async getContents(filePath: string): Promise<string | null> {
+    const content = await axios.get(filePath);
+    return content.data;
   }
 }

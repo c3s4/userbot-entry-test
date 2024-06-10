@@ -38,18 +38,16 @@ describe('Http file reader', () => {
     });
   });
 
-  describe('readData method', () => {
+  describe('readData methods', () => {
     let matchMock: jest.SpyInstance;
-    let getSpy: jest.SpyInstance;
-
     it('should return null because no match and no successor', async () => {
-      matchMock = jest.spyOn(httpFileReader, 'match').mockImplementation(async (filePath: string) => false);
+      matchMock = jest.spyOn(httpFileReader, 'match').mockResolvedValue(false);
       const res = await httpFileReader.readData('a file path');
       expect(res).toBe(null);
     });
 
     it('should call readData on successor', async () => {
-      matchMock = jest.spyOn(httpFileReader, 'match').mockImplementation(async (filePath: string) => false);
+      matchMock = jest.spyOn(httpFileReader, 'match').mockResolvedValue(false);
       const fakeFilePath = 'fake/file/path';
       const httpReader2 = new HttpFileReader();
       const httpReader2Spy = jest.spyOn(httpReader2, 'readData');
@@ -59,33 +57,63 @@ describe('Http file reader', () => {
       expect(httpReader2Spy).toHaveBeenCalledWith(fakeFilePath);
     });
 
-    it('should return null because of error on reading remote file', async () => {
-      matchMock = jest.spyOn(httpFileReader, 'match').mockImplementation(async (filePath: string) => true);
+    it('should return null because of error in getContents', async () => {
+      matchMock = jest.spyOn(httpFileReader, 'match').mockResolvedValue(true);
+      const getContentsMock = jest.spyOn(httpFileReader, 'getContents').mockImplementation(() => {
+        throw new Error();
+      });
+      const fakeFilePath = 'fake/file/path';
+
+      const res = await httpFileReader.readData(fakeFilePath);
+      expect(getContentsMock).toHaveBeenCalledWith(fakeFilePath);
+      expect(res).toBe(null);
+
+      getContentsMock.mockRestore();
+    });
+
+    it('should call getContents', async () => {
+      matchMock = jest.spyOn(httpFileReader, 'match').mockResolvedValue(true);
+      const getContentsMock = jest.spyOn(httpFileReader, 'getContents');
+      const fakeFilePath = 'fake/file/path';
+
+      await httpFileReader.readData(fakeFilePath);
+      expect(getContentsMock).toHaveBeenCalledWith(fakeFilePath);
+
+      getContentsMock.mockRestore();
+    });
+
+    afterEach(() => {
+      matchMock?.mockRestore();
+    });
+  });
+
+  describe('getContents method', () => {
+    let getSpy: jest.SpyInstance;
+
+    it('should throw exception because of error on reading remote file', async () => {
       const fakeFilePath = 'fake/file/path';
       getSpy = jest.spyOn(axios, 'get').mockImplementation(() => {
         throw new Error();
       });
 
-      const res = await httpFileReader.readData(fakeFilePath);
+      const getContentsPromise = httpFileReader.getContents(fakeFilePath);
+      expect(getContentsPromise).rejects.toThrow();
       expect(getSpy).toHaveBeenCalled();
-      expect(res).toBe(null);
     });
 
     it('should return expected string content', async () => {
-      matchMock = jest.spyOn(httpFileReader, 'match').mockImplementation(async (filePath: string) => true);
       const fakeFilePath = '/fake/file/path';
       const fakeContent = 'fake content';
       getSpy = jest.spyOn(axios, 'get').mockResolvedValue({
         data: fakeContent,
       });
 
-      const res = await httpFileReader.readData(fakeFilePath);
+      const res = await httpFileReader.getContents(fakeFilePath);
       expect(getSpy).toHaveBeenCalled();
       expect(res).toBe(fakeContent);
     });
 
     afterEach(() => {
-      matchMock?.mockRestore();
       getSpy?.mockRestore();
     });
   });
